@@ -54,7 +54,7 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DTDESKTOP_API_TEST=ON -DDESKTOP_APP_USE_PACKAGED=OFF -DCMAKE_PREFIX_PATH="C:/Program Files (x86)/ada" ..
+        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DTDESKTOP_API_TEST=ON -DDESKTOP_APP_USE_PACKAGED=OFF -DBoost_INCLUDE_DIR="C:/Program Files (x86)/boost" ..
         
     - name: Build
       working-directory: tdesktop/build
