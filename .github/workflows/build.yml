@@ -1,0 +1,50 @@
+name: Build Telegram Desktop
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+        
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+        
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '5.12.8'
+        
+    - name: Setup MSVC
+      uses: microsoft/setup-msbuild@v1.1
+        
+    - name: Install dependencies
+      run: |
+        choco install ninja cmake
+        
+    - name: Configure
+      run: |
+        mkdir build
+        cd build
+        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release ..
+        
+    - name: Build
+      run: |
+        cd build
+        ninja
+        
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: telegram-desktop
+        path: build/Telegram/Telegram.exe
