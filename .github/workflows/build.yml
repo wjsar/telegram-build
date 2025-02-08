@@ -34,7 +34,7 @@ jobs:
       with:
         vs-version: '[17.0,18.0)'
         
-    - name: Install Boost
+    - name: Install Boost and Protobuf
       shell: powershell
       run: |
         Write-Host "Installing vcpkg..."
@@ -43,9 +43,10 @@ jobs:
         .\bootstrap-vcpkg.bat
         .\vcpkg integrate install
         
-        Write-Host "Installing Boost..."
+        Write-Host "Installing dependencies..."
         .\vcpkg install boost:x64-windows
         .\vcpkg install boost-regex:x64-windows
+        .\vcpkg install protobuf:x64-windows
         
     - name: Install dependencies
       run: |
