@@ -42,7 +42,7 @@ jobs:
         
     - name: Install Ada
       run: |
-        git clone https://github.com/AdaCore/ada.git
+        git clone git@github.com:AdaCore/ada.git
         cd ada
         mkdir build && cd build
         cmake -G Ninja -DCMAKE_BUILD_TYPE=Release ..
