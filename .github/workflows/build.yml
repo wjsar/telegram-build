@@ -42,8 +42,8 @@ jobs:
         
     - name: Install Ada
       run: |
-        git clone https://${{ secrets.TOKEN }}@github.com/AdaCore/ada.git
-        cd ada
+        git clone https://${{ secrets.TOKEN }}@github.com/AdaCore/Ada.git
+        cd Ada
         mkdir build && cd build
         cmake -G Ninja -DCMAKE_BUILD_TYPE=Release ..
         ninja
