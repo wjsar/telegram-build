@@ -40,12 +40,21 @@ jobs:
         choco install -y --force python3
         pip3 install gyp-next
         
+    - name: Install Ada
+      run: |
+        git clone https://github.com/AdaCore/ada.git
+        cd ada
+        mkdir build && cd build
+        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release ..
+        ninja
+        ninja install
+        
     - name: Configure
       working-directory: tdesktop
       run: |
         mkdir build
         cd build
-        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DTDESKTOP_API_TEST=ON -DDESKTOP_APP_USE_PACKAGED=OFF ..
+        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DTDESKTOP_API_TEST=ON -DDESKTOP_APP_USE_PACKAGED=OFF -DCMAKE_PREFIX_PATH="C:/Program Files (x86)/ada" ..
         
     - name: Build
       working-directory: tdesktop/build
