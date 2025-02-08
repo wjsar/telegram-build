@@ -34,14 +34,17 @@ jobs:
       with:
         vs-version: '[17.0,18.0)'
         
+    - name: Install 7-Zip
+      run: choco install 7zip -y
+        
     - name: Install Boost
       shell: powershell
       run: |
         Write-Host "Downloading Boost..."
-        Invoke-WebRequest -Uri "https://sourceforge.net/projects/boost/files/boost/1.82.0/boost_1_82_0.zip/download" -OutFile "boost.zip"
+        Invoke-WebRequest -Uri "https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/boost_1_82_0.zip" -OutFile "boost.zip"
         
         Write-Host "Extracting Boost..."
-        Expand-Archive -Path boost.zip -DestinationPath C:\
+        & "C:\Program Files\7-Zip\7z.exe" x boost.zip -oC:\
         
         Write-Host "Building Boost..."
         cd C:\boost_1_82_0
