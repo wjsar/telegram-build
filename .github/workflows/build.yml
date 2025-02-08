@@ -37,8 +37,8 @@ jobs:
     - name: Install Boost
       shell: cmd
       run: |
-        curl -L -o boost.7z https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/boost_1_82_0.7z
-        7z x boost.7z -oC:\
+        curl -L -o boost.zip https://sourceforge.net/projects/boost/files/boost/1.82.0/boost_1_82_0.zip/download
+        powershell Expand-Archive boost.zip -DestinationPath C:\
         cd C:\boost_1_82_0
         call bootstrap.bat
         .\b2.exe --with-regex install
