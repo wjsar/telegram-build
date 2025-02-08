@@ -35,13 +35,18 @@ jobs:
         vs-version: '[17.0,18.0)'
         
     - name: Install Boost
-      shell: cmd
+      shell: powershell
       run: |
-        curl -L -o boost.zip https://sourceforge.net/projects/boost/files/boost/1.82.0/boost_1_82_0.zip/download
-        powershell Expand-Archive boost.zip -DestinationPath C:\
+        Write-Host "Downloading Boost..."
+        Invoke-WebRequest -Uri "https://sourceforge.net/projects/boost/files/boost/1.82.0/boost_1_82_0.zip/download" -OutFile "boost.zip"
+        
+        Write-Host "Extracting Boost..."
+        Expand-Archive -Path boost.zip -DestinationPath C:\
+        
+        Write-Host "Building Boost..."
         cd C:\boost_1_82_0
-        call bootstrap.bat
-        .\b2.exe --with-regex install
+        cmd /c "bootstrap.bat"
+        cmd /c "b2.exe --with-regex --prefix=C:\Boost install"
         
     - name: Install dependencies
       run: |
@@ -63,7 +68,7 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DTDESKTOP_API_TEST=ON -DDESKTOP_APP_USE_PACKAGED=OFF -DBOOST_ROOT="C:\boost_1_82_0" -DBoost_INCLUDE_DIR="C:\boost_1_82_0" ..
+        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DTDESKTOP_API_TEST=ON -DDESKTOP_APP_USE_PACKAGED=OFF -DBOOST_ROOT="C:\Boost" -DBoost_INCLUDE_DIR="C:\Boost\include" -DBoost_LIBRARY_DIR="C:\Boost\lib" ..
         
     - name: Build
       working-directory: tdesktop/build
