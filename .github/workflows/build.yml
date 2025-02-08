@@ -2,67 +2,97 @@ name: Build Telegram Desktop
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main, master ]
   pull_request:
-    branches: [ "main" ]
-  workflow_dispatch:
+    branches: [ main, master ]
 
 jobs:
-  build:
-    runs-on: windows-latest
-    
+  build-linux:
+    runs-on: ubuntu-latest
     steps:
-    - name: Clone Telegram Desktop
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        fetch-depth: 0
+
+    - name: Install system dependencies
       run: |
-        git clone --recursive https://${{ secrets.TOKEN }}@github.com/telegramdesktop/tdesktop.git
-        cd tdesktop
-        
-    - name: Set up Python
-      uses: actions/setup-python@v5
+        sudo apt-get update
+        sudo ./setup/system/install_dependencies.sh
+
+    - name: Setup ThirdParty libraries
+      run: ./setup/setup_third_party.sh
+
+    - name: Configure CMake
+      run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+    - name: Build project
+      run: cmake --build build --config Release --parallel $(nproc)
+
+    - name: Upload Linux artifact
+      uses: actions/upload-artifact@v3
       with:
-        python-version: '3.x'
-        
-    - name: Install Qt
-      uses: jurplel/install-qt-action@v3
+        name: Telegram-Linux
+        path: build/out/Release/Telegram
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
       with:
-        version: '5.15.2'
-        arch: 'win64_msvc2019_64'
-        modules: 'qtwebengine'
-        
-    - name: Setup MSVC
-      uses: microsoft/setup-msbuild@v1.1
+        submodules: recursive
+        fetch-depth: 0
+
+    - name: Install Visual Studio 2022
+      uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Install build tools
+      shell: powershell
+      run: |
+        choco install -y cmake ninja python3
+
+    - name: Setup ThirdParty libraries
+      shell: cmd
+      run: setup\setup_third_party.cmd
+
+    - name: Configure CMake
+      run: cmake -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Release
+
+    - name: Build project
+      run: cmake --build build --config Release --parallel 4
+
+    - name: Upload Windows artifact
+      uses: actions/upload-artifact@v3
       with:
-        vs-version: '[17.0,18.0)'
-        
+        name: Telegram-Windows
+        path: build\out\Release\Telegram.exe
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        fetch-depth: 0
+
     - name: Install dependencies
       run: |
-        choco install ninja cmake yasm perl strawberryperl boost
-        choco install -y --force python3
-        pip3 install gyp-next
-        
-    - name: Install Ada
-      run: |
-        git clone https://${{ secrets.TOKEN }}@github.com/ada-url/ada.git
-        cd ada
-        mkdir build && cd build
-        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release ..
-        ninja
-        ninja install
-        
-    - name: Configure
-      working-directory: tdesktop
-      run: |
-        mkdir build
-        cd build
-        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DTDESKTOP_API_TEST=ON -DDESKTOP_APP_USE_PACKAGED=OFF -DBoost_INCLUDE_DIR="C:/Program Files (x86)/boost" ..
-        
-    - name: Build
-      working-directory: tdesktop/build
-      run: |
-        ninja
-        
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v4
+        brew install cmake ninja python3
+
+    - name: Setup ThirdParty libraries
+      run: ./setup/setup_third_party.sh
+
+    - name: Configure CMake
+      run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+    - name: Build project
+      run: cmake --build build --config Release --parallel $(sysctl -n hw.ncpu)
+
+    - name: Upload macOS artifact
+      uses: actions/upload-artifact@v3
       with:
-        name: telegram-desktop
-        path: tdesktop/build/Telegram/Telegram.exe
+        name: Telegram-macOS
+        path: build/out/Release/Telegram.app
