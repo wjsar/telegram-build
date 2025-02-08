@@ -34,9 +34,20 @@ jobs:
       with:
         vs-version: '[17.0,18.0)'
         
+    - name: Install Boost
+      run: |
+        $boostVersion = "1.82.0"
+        $boostVersionUnderscores = $boostVersion.Replace(".", "_")
+        Invoke-WebRequest -Uri "https://boostorg.jfrog.io/artifactory/main/release/$boostVersion/source/boost_$boostVersionUnderscores.zip" -OutFile "boost.zip"
+        Expand-Archive -Path "boost.zip" -DestinationPath "C:\"
+        Rename-Item -Path "C:\boost_$boostVersionUnderscores" -NewName "C:\boost"
+        cd C:\boost
+        .\bootstrap.bat
+        .\b2.exe --with-regex --prefix="C:\Program Files (x86)\boost" install
+        
     - name: Install dependencies
       run: |
-        choco install ninja cmake yasm perl strawberryperl boost
+        choco install ninja cmake yasm perl strawberryperl
         choco install -y --force python3
         pip3 install gyp-next
         
@@ -54,7 +65,7 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DTDESKTOP_API_TEST=ON -DDESKTOP_APP_USE_PACKAGED=OFF -DBoost_INCLUDE_DIR="C:/Program Files (x86)/boost" ..
+        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DTDESKTOP_API_TEST=ON -DDESKTOP_APP_USE_PACKAGED=OFF -DBOOST_ROOT="C:\Program Files (x86)\boost" -DBoost_INCLUDE_DIR="C:\Program Files (x86)\boost\include" -DBoost_LIBRARY_DIR="C:\Program Files (x86)\boost\lib" ..
         
     - name: Build
       working-directory: tdesktop/build
