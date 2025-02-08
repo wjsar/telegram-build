@@ -17,18 +17,6 @@ jobs:
         git clone --recursive https://${{ secrets.TOKEN }}@github.com/telegramdesktop/tdesktop.git
         cd tdesktop
         
-    - name: Cache dependencies
-      uses: actions/cache@v3
-      with:
-        path: |
-          C:/vcpkg
-          C:/Qt
-          C:/Program Files (x86)/boost
-          build
-        key: ${{ runner.os }}-deps-${{ hashFiles('**/CMakeLists.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-deps-
-        
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
@@ -49,16 +37,16 @@ jobs:
     - name: Install vcpkg dependencies
       shell: powershell
       run: |
-        if (-not (Test-Path C:/vcpkg)) {
+        if (-not (Test-Path vcpkg)) {
           Write-Host "Installing vcpkg..."
-          git clone https://github.com/Microsoft/vcpkg.git C:/vcpkg
-          cd C:/vcpkg
+          git clone https://github.com/Microsoft/vcpkg.git
+          cd vcpkg
           .\bootstrap-vcpkg.bat
           .\vcpkg integrate install
-          
-          Write-Host "Installing dependencies..."
-          .\vcpkg install boost:x64-windows boost-regex:x64-windows protobuf:x64-windows ffmpeg:x64-windows tl-expected:x64-windows
         }
+        
+        Write-Host "Installing dependencies..."
+        .\vcpkg install boost:x64-windows boost-regex:x64-windows protobuf:x64-windows ffmpeg:x64-windows tl-expected:x64-windows
         
     - name: Install dependencies
       run: |
@@ -67,7 +55,6 @@ jobs:
         pip3 install gyp-next
         
     - name: Install Ada
-      if: hashFiles('C:/Program Files (x86)/ada') == ''
       run: |
         git clone https://${{ secrets.TOKEN }}@github.com/ada-url/ada.git
         cd ada
@@ -81,7 +68,7 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DTDESKTOP_API_TEST=ON -DDESKTOP_APP_USE_PACKAGED=OFF -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake ..
+        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DTDESKTOP_API_TEST=ON -DDESKTOP_APP_USE_PACKAGED=OFF -DCMAKE_TOOLCHAIN_FILE=D:/a/telegram-build/telegram-build/vcpkg/scripts/buildsystems/vcpkg.cmake ..
         
     - name: Build
       working-directory: tdesktop/build
