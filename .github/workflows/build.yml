@@ -40,7 +40,8 @@ jobs:
       with:
         version: '5.15.2'
         arch: 'win64_msvc2019_64'
-        modules: 'qtwebengine qtwebenginecore qtwebenginewidgets'
+        modules: 'qtwebengine'
+        tools: 'tools_webengine'
         
     - name: Setup MSVC
       uses: microsoft/setup-msbuild@v1.1
