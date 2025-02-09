@@ -12,6 +12,7 @@ jobs:
     runs-on: windows-latest
     env:
       VCPKG_ROOT: C:/vcpkg
+      QT_DIR: D:/a/telegram-build/Qt
       
     steps:
     - name: Clone Telegram Desktop
@@ -24,7 +25,7 @@ jobs:
       with:
         path: |
           C:/vcpkg
-          C:/Qt
+          D:/a/telegram-build/Qt
           build
         key: ${{ runner.os }}-deps-${{ hashFiles('**/CMakeLists.txt') }}
         restore-keys: |
@@ -41,6 +42,7 @@ jobs:
         version: '5.15.2'
         arch: 'win64_msvc2019_64'
         modules: 'qtwebengine'
+        dir: ${{ env.QT_DIR }}
         
     - name: Setup MSVC
       uses: microsoft/setup-msbuild@v1.1
@@ -73,13 +75,29 @@ jobs:
           openal-soft:x64-windows `
           opus:x64-windows `
           range-v3:x64-windows `
-          rnnoise:x64-windows
+          rnnoise:x64-windows `
+          zlib:x64-windows `
+          openssl:x64-windows `
+          abseil:x64-windows `
+          libvpx:x64-windows `
+          libwebp:x64-windows `
+          mozjpeg:x64-windows `
+          opus:x64-windows `
+          xxhash:x64-windows `
+          fmt:x64-windows `
+          rapidjson:x64-windows `
+          expected-lite:x64-windows `
+          gsl-lite:x64-windows `
+          rlottie:x64-windows `
+          libpng:x64-windows `
+          libogg:x64-windows `
+          libvorbis:x64-windows
         
-    - name: Install dependencies
+    - name: Install system dependencies
       run: |
         choco install ninja cmake yasm perl strawberryperl
         choco install -y --force python3
-        pip3 install gyp-next
+        pip3 install gyp-next cmake ninja setuptools wheel
         
     - name: Install Ada
       if: hashFiles('C:/Program Files (x86)/ada') == ''
@@ -95,10 +113,23 @@ jobs:
       working-directory: tdesktop
       env:
         BOOST_ROOT: C:/vcpkg/installed/x64-windows
+        CMAKE_PREFIX_PATH: ${{ env.QT_DIR }}/5.15.2/msvc2019_64
       run: |
         mkdir build
         cd build
-        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DTDESKTOP_API_TEST=ON -DDESKTOP_APP_USE_PACKAGED=OFF -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" -DBoost_USE_STATIC_LIBS=ON -DBOOST_ROOT="$env:BOOST_ROOT" -DBoost_INCLUDE_DIR="$env:BOOST_ROOT/include" ..
+        cmake -G Ninja `
+          -DCMAKE_BUILD_TYPE=Release `
+          -DTDESKTOP_API_TEST=ON `
+          -DDESKTOP_APP_USE_PACKAGED=OFF `
+          -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" `
+          -DBoost_USE_STATIC_LIBS=ON `
+          -DBOOST_ROOT="$env:BOOST_ROOT" `
+          -DBoost_INCLUDE_DIR="$env:BOOST_ROOT/include" `
+          -DTDESKTOP_USE_PACKAGED=ON `
+          -DDESKTOP_APP_USE_PACKAGED=ON `
+          -DDESKTOP_APP_DISABLE_CRASH_REPORTS=ON `
+          -DCMAKE_PREFIX_PATH="$env:CMAKE_PREFIX_PATH" `
+          ..
         
     - name: Build
       working-directory: tdesktop/build
