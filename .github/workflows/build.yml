@@ -40,7 +40,7 @@ jobs:
       with:
         version: '5.15.2'
         arch: 'win64_msvc2019_64'
-        modules: 'qtwebengine'
+        modules: 'qtwebengine qtwebchannel qtimageformats qtsvg'
         
     - name: Setup MSVC
       uses: microsoft/setup-msbuild@v1.1
@@ -68,12 +68,30 @@ jobs:
           ms-gsl:x64-windows `
           hunspell:x64-windows `
           libjpeg-turbo:x64-windows `
-          kf5coreaddons:x64-windows `
           lz4:x64-windows `
           minizip:x64-windows `
-          openal-soft:x64-windows
+          openal-soft:x64-windows `
+          opus:x64-windows `
+          range-v3:x64-windows `
+          rnnoise:x64-windows `
+          zlib:x64-windows `
+          openssl:x64-windows `
+          abseil:x64-windows `
+          libvpx:x64-windows `
+          libwebp:x64-windows `
+          mozjpeg:x64-windows `
+          opus:x64-windows `
+          xxhash:x64-windows `
+          fmt:x64-windows `
+          rapidjson:x64-windows `
+          expected-lite:x64-windows `
+          gsl-lite:x64-windows `
+          rlottie:x64-windows `
+          libpng:x64-windows `
+          libogg:x64-windows `
+          libvorbis:x64-windows
         
-    - name: Install dependencies
+    - name: Install system dependencies
       run: |
         choco install ninja cmake yasm perl strawberryperl
         choco install -y --force python3
@@ -96,7 +114,18 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DTDESKTOP_API_TEST=ON -DDESKTOP_APP_USE_PACKAGED=OFF -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" -DBoost_USE_STATIC_LIBS=ON -DBOOST_ROOT="$env:BOOST_ROOT" -DBoost_INCLUDE_DIR="$env:BOOST_ROOT/include" ..
+        cmake -G Ninja `
+          -DCMAKE_BUILD_TYPE=Release `
+          -DTDESKTOP_API_TEST=ON `
+          -DDESKTOP_APP_USE_PACKAGED=OFF `
+          -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" `
+          -DBoost_USE_STATIC_LIBS=ON `
+          -DBOOST_ROOT="$env:BOOST_ROOT" `
+          -DBoost_INCLUDE_DIR="$env:BOOST_ROOT/include" `
+          -DTDESKTOP_USE_PACKAGED=ON `
+          -DDESKTOP_APP_USE_PACKAGED=ON `
+          -DDESKTOP_APP_DISABLE_CRASH_REPORTS=ON `
+          ..
         
     - name: Build
       working-directory: tdesktop/build
