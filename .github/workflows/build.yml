@@ -75,14 +75,12 @@ jobs:
           openal-soft:x64-windows `
           opus:x64-windows `
           range-v3:x64-windows `
-          rnnoise:x64-windows `
           zlib:x64-windows `
           openssl:x64-windows `
           abseil:x64-windows `
           libvpx:x64-windows `
           libwebp:x64-windows `
           mozjpeg:x64-windows `
-          opus:x64-windows `
           xxhash:x64-windows `
           fmt:x64-windows `
           rapidjson:x64-windows `
