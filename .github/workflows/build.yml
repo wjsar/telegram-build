@@ -41,7 +41,6 @@ jobs:
         version: '5.15.2'
         arch: 'win64_msvc2019_64'
         modules: 'qtwebengine'
-        tools: 'tools_webengine'
         
     - name: Setup MSVC
       uses: microsoft/setup-msbuild@v1.1
@@ -74,25 +73,9 @@ jobs:
           openal-soft:x64-windows `
           opus:x64-windows `
           range-v3:x64-windows `
-          rnnoise:x64-windows `
-          zlib:x64-windows `
-          openssl:x64-windows `
-          abseil:x64-windows `
-          libvpx:x64-windows `
-          libwebp:x64-windows `
-          mozjpeg:x64-windows `
-          opus:x64-windows `
-          xxhash:x64-windows `
-          fmt:x64-windows `
-          rapidjson:x64-windows `
-          expected-lite:x64-windows `
-          gsl-lite:x64-windows `
-          rlottie:x64-windows `
-          libpng:x64-windows `
-          libogg:x64-windows `
-          libvorbis:x64-windows
+          rnnoise:x64-windows
         
-    - name: Install system dependencies
+    - name: Install dependencies
       run: |
         choco install ninja cmake yasm perl strawberryperl
         choco install -y --force python3
@@ -115,18 +98,7 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake -G Ninja `
-          -DCMAKE_BUILD_TYPE=Release `
-          -DTDESKTOP_API_TEST=ON `
-          -DDESKTOP_APP_USE_PACKAGED=OFF `
-          -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" `
-          -DBoost_USE_STATIC_LIBS=ON `
-          -DBOOST_ROOT="$env:BOOST_ROOT" `
-          -DBoost_INCLUDE_DIR="$env:BOOST_ROOT/include" `
-          -DTDESKTOP_USE_PACKAGED=ON `
-          -DDESKTOP_APP_USE_PACKAGED=ON `
-          -DDESKTOP_APP_DISABLE_CRASH_REPORTS=ON `
-          ..
+        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DTDESKTOP_API_TEST=ON -DDESKTOP_APP_USE_PACKAGED=OFF -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" -DBoost_USE_STATIC_LIBS=ON -DBOOST_ROOT="$env:BOOST_ROOT" -DBoost_INCLUDE_DIR="$env:BOOST_ROOT/include" ..
         
     - name: Build
       working-directory: tdesktop/build
