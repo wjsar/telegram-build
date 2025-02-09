@@ -59,7 +59,7 @@ jobs:
           .\bootstrap-vcpkg.bat
           .\vcpkg integrate install
         }
-        
+
         Write-Host "Installing dependencies..."
         & "$env:VCPKG_ROOT\vcpkg.exe" install `
           boost:x64-windows `
