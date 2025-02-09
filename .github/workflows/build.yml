@@ -59,7 +59,7 @@ jobs:
         }
         
         Write-Host "Installing dependencies..."
-        $env:VCPKG_ROOT/vcpkg install boost:x64-windows boost-regex:x64-windows protobuf:x64-windows ffmpeg:x64-windows tl-expected:x64-windows microsoft-gsl:x64-windows hunspell:x64-windows libjpeg-turbo:x64-windows
+        & "$env:VCPKG_ROOT\vcpkg.exe" install boost:x64-windows boost-regex:x64-windows protobuf:x64-windows ffmpeg:x64-windows tl-expected:x64-windows microsoft-gsl:x64-windows hunspell:x64-windows libjpeg-turbo:x64-windows
         
     - name: Install dependencies
       run: |
@@ -84,7 +84,7 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DTDESKTOP_API_TEST=ON -DDESKTOP_APP_USE_PACKAGED=OFF -DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake -DBoost_USE_STATIC_LIBS=ON -DBOOST_ROOT=$env:BOOST_ROOT -DBoost_INCLUDE_DIR=$env:BOOST_ROOT/include ..
+        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DTDESKTOP_API_TEST=ON -DDESKTOP_APP_USE_PACKAGED=OFF -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" -DBoost_USE_STATIC_LIBS=ON -DBOOST_ROOT="$env:BOOST_ROOT" -DBoost_INCLUDE_DIR="$env:BOOST_ROOT/include" ..
         
     - name: Build
       working-directory: tdesktop/build
