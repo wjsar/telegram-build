@@ -59,7 +59,7 @@ jobs:
         }
         
         Write-Host "Installing dependencies..."
-        & "$env:VCPKG_ROOT\vcpkg.exe" install boost:x64-windows boost-regex:x64-windows protobuf:x64-windows ffmpeg:x64-windows tl-expected:x64-windows microsoft-gsl:x64-windows hunspell:x64-windows libjpeg-turbo:x64-windows
+        & "$env:VCPKG_ROOT\vcpkg.exe" install boost:x64-windows boost-regex:x64-windows protobuf:x64-windows ffmpeg:x64-windows tl-expected:x64-windows ms-gsl:x64-windows hunspell:x64-windows libjpeg-turbo:x64-windows
         
     - name: Install dependencies
       run: |
